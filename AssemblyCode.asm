@@ -6,13 +6,37 @@ section .text
 global main
 decimal_to_radixn:
     NEWLINE
-    PRINT_STRING "in decimal to radix n"
+
+    PRINT_STRING "Enter a decimal number: "
+
+    GET_DEC 4, RAX
+    
+    PRINT_STRING "Enter a Radix: "
+    GET_DEC 4, rsi
+
+
+    PRINT_STRING "Decimal: "
+    PRINT_DEC 4, RAX
+    
+    xor rdx, rdx               
+    div rsi             
+
+    
+    PRINT_STRING "Hexadecimal Quotient: "
+    PRINT_DEC 4, RAX
+
+    ;
+    PRINT_STRING "Hexadecimal Remainder: "
+    PRINT_DEC 1, DL    
+
+    
+ 
     ret
 
 radixn_to_decimal:
     NEWLINE
     PRINT_STRING "in radixn to decimal"
-    PRINT_STRING "test
+    
     ret
 
 main:
