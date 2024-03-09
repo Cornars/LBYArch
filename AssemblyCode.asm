@@ -83,10 +83,12 @@ radixn_to_decimal:
     JL radix_less_than_2
     
     JMP loop_part
+    
 radix_greater_than_16:
     PRINT_STRING "This is an invalid radix, radix must not be greater than 16"
     NEWLINE
     JMP terminated
+    
 radix_less_than_2:
     PRINT_STRING "This is an invalid radix, radix must not be less than 2"
     NEWLINE
@@ -133,9 +135,10 @@ invalid_number_end:
     PRINT_STRING " number!"
     NEWLINE
     JMP terminated
-    ret
 
 FINIS:
+    CMP RDX, RSI
+    JGE invalid_number_end
     MOV qword [remainder_buffer], RDX
     ; RDX is the digit to raise
     cmp qword [counter], 0
