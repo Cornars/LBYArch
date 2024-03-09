@@ -19,6 +19,7 @@ current_power dq 1
 
 section .text
 global main
+
 decimal_to_radixn:
     JMP start
     error_msg_1:
@@ -67,22 +68,37 @@ decimal_to_radixn:
         DEC qword [digit_acc]
         cmp qword [digit_acc], 0
         JNE pop_stack   
-     
     
+    NEWLINE
+    PRINT_STRING "program terminated. press enter to exit..."
+    GET_DEC 8, RAX
     ret
 
 radixn_to_decimal:
-    PRINT_STRING "N-radix digits: "
+    PRINT_STRING "Enter a number: "
     GET_HEX 8, RAX
     NEWLINE
     
     ; Radix, which is in Hex
-    PRINT_STRING "Radix: "
+    PRINT_STRING "Enter its radix: "
     GET_DEC 8, RSI
     NEWLINE
 
+    CMP RSI, 16
+    JG radix_greater_than_16
+    CMP RSI, 2
+    JL radix_less_than_2
+    
+    JMP loop_part
+radix_greater_than_16:
+    PRINT_STRING "This is an invalid radix, radix must not be greater than 16"
+    NEWLINE
+    JMP start
+radix_less_than_2:
+    PRINT_STRING "This is an invalid radix, radix must not be less than 2"
+    JMP radixn_to_decimal
     ; get nth digit, the radix raised it to its position, add it to a sum
-    jmp loop_part
+    jmp radixn_to_decimal
     
 first_iteration:
     ADD qword [accum], RDX
@@ -94,7 +110,11 @@ loop_part:
     div r9
     CMP RAX, 0
     JE FINIS
+    CMP RDX, RSI
+    JGE invalid_number_end
     MOV qword [remainder_buffer], RDX
+    
+
     ; RDX is the digit to raise
     cmp qword [counter], 0
     JE first_iteration
@@ -115,7 +135,12 @@ loop_part:
    
     JMP loop_part
         
-
+invalid_number_end:
+    PRINT_STRING "Invalid radix-"
+    PRINT_DEC 4, RSI
+    PRINT_STRING "number!"
+    NEWLINE
+    ret
 
 FINIS:
     MOV qword [remainder_buffer], RDX
@@ -138,13 +163,19 @@ FINIS:
     INC qword [counter]
     PRINT_STRING "Decimal equivalent: "
     PRINT_UDEC 8, [accum]
+    
+    PRINT_STRING "program terminated. press enter to exit..."
+    GET_DEC 8, RAX
     xor rax, rax
     ret
 
 main:
+    mov rbp, rsp; for correct debugging
     PRINT_STRING "[1] Decimal to Radix-n"
     NEWLINE
     PRINT_STRING "[2] Radix-n to Decimal"
+    NEWLINE
+    PRINT_STRING "select mode: "
     GET_DEC 1, [var1]
     cmp byte [var1], 1
     JE decimal_to_radixn
