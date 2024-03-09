@@ -23,13 +23,6 @@ global main
 decimal_to_radixn:
     NEWLINE
     JMP start
-    error_msg_1:
-    PRINT_STRING "This is an invalid radix, radix must not be greater than 16"
-    NEWLINE
-    JMP terminated
-    error_msg_2:
-    PRINT_STRING "This is an invalid radix, radix must not be less than 2"
-    JMP terminated
     
     start:
     NEWLINE
@@ -42,14 +35,11 @@ decimal_to_radixn:
     GET_DEC 8, rsi
     NEWLINE
     CMP RSI, 16
-    JG error_msg_1
+    JG radix_greater_than_16
     CMP RSI, 2
-    JL error_msg_2
+    JL radix_less_than_2
     
 
-
-    PRINT_STRING "Decimal: "
-    PRINT_DEC 8, RAX
     cont_div: 
         xor rdx, rdx               
         div rsi            
@@ -62,7 +52,9 @@ decimal_to_radixn:
         cmp qword [result], 0
         JNE cont_div
     NEWLINE
-    PRINT_STRING "N-Radix Result: "
+    PRINT_STRING "Output (radix-"
+    PRINT_DEC 8, RSI
+    PRINT_STRING "): "
     pop_stack:
         
         POP RBX
@@ -174,11 +166,11 @@ terminated:
     ret
 main:
     mov rbp, rsp; for correct debugging
-    PRINT_STRING "[1] Decimal to Radix-n"
+    PRINT_STRING "[1] Decimal to Radix-N"
     NEWLINE
-    PRINT_STRING "[2] Radix-n to Decimal"
+    PRINT_STRING "[2] Radix-N to Decimal"
     NEWLINE
-    PRINT_STRING "select mode: "
+    PRINT_STRING "Select Mode: "
     GET_DEC 1, [var1]
     cmp byte [var1], 1
     JE decimal_to_radixn
