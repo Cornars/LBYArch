@@ -21,14 +21,15 @@ section .text
 global main
 
 decimal_to_radixn:
+    NEWLINE
     JMP start
     error_msg_1:
     PRINT_STRING "This is an invalid radix, radix must not be greater than 16"
     NEWLINE
-    JMP start
+    JMP terminated
     error_msg_2:
     PRINT_STRING "This is an invalid radix, radix must not be less than 2"
-    JMP start
+    JMP terminated
     
     start:
     NEWLINE
@@ -36,9 +37,10 @@ decimal_to_radixn:
     PRINT_STRING "Enter a decimal number: "
 
     GET_DEC 8, RAX
-    
+    NEWLINE
     PRINT_STRING "Enter a Radix: "
     GET_DEC 8, rsi
+    NEWLINE
     CMP RSI, 16
     JG error_msg_1
     CMP RSI, 2
@@ -70,11 +72,10 @@ decimal_to_radixn:
         JNE pop_stack   
     
     NEWLINE
-    PRINT_STRING "program terminated. press enter to exit..."
-    GET_DEC 8, RAX
-    ret
+    JMP terminated
 
 radixn_to_decimal:
+    NEWLINE
     PRINT_STRING "Enter a number: "
     GET_HEX 8, RAX
     NEWLINE
@@ -93,12 +94,11 @@ radixn_to_decimal:
 radix_greater_than_16:
     PRINT_STRING "This is an invalid radix, radix must not be greater than 16"
     NEWLINE
-    JMP start
+    JMP terminated
 radix_less_than_2:
     PRINT_STRING "This is an invalid radix, radix must not be less than 2"
-    JMP radixn_to_decimal
-    ; get nth digit, the radix raised it to its position, add it to a sum
-    jmp radixn_to_decimal
+    NEWLINE
+    JMP terminated
     
 first_iteration:
     ADD qword [accum], RDX
@@ -138,8 +138,9 @@ loop_part:
 invalid_number_end:
     PRINT_STRING "Invalid radix-"
     PRINT_DEC 4, RSI
-    PRINT_STRING "number!"
+    PRINT_STRING " number!"
     NEWLINE
+    JMP terminated
     ret
 
 FINIS:
@@ -163,12 +164,14 @@ FINIS:
     INC qword [counter]
     PRINT_STRING "Decimal equivalent: "
     PRINT_UDEC 8, [accum]
-    
-    PRINT_STRING "program terminated. press enter to exit..."
+    NEWLINE
+    JMP terminated
+
+terminated:
+    PRINT_STRING "Program Terminated. Press Enter to Exit..."
     GET_DEC 8, RAX
     xor rax, rax
     ret
-
 main:
     mov rbp, rsp; for correct debugging
     PRINT_STRING "[1] Decimal to Radix-n"
